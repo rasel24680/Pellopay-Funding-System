@@ -19,11 +19,13 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: var(--white);
     color: var(--text-dark);
     line-height: 1.6;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 /* ===== Navigation ===== */
 .navbar {
@@ -114,7 +116,7 @@ body {
 }
 
 .find-funding-btn {
-    background: linear-gradient(135deg, var(--accent-red), #ff8c42);
+    background: linear-gradient(90deg, #F96C34, #F2217B);
     color: var(--white);
     padding: 0.6rem 1.5rem;
     border-radius: 25px;
@@ -588,21 +590,28 @@ body {
     display: flex;
     gap: 1rem;
     margin-top: 1.2rem;
+    align-items: center;
 }
 
 .back-button {
-    flex: 1;
+    flex: 0 0 auto;
+    width: 100px;
     background-color: var(--white);
     color: var(--primary-dark);
     border: 2px solid var(--primary-dark);
-    padding: 0.85rem;
+    padding: 0;
     border-radius: 50px;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .back-button::before {
@@ -635,10 +644,11 @@ body {
 
 .continue-button {
     flex: 1;
-    background: linear-gradient(135deg, var(--accent-red), #ff8a7f);
+    width: 100%;
+    background: linear-gradient(90deg, #F96C34, #F2217B);
     color: var(--white);
     border: none;
-    padding: 0.85rem;
+    padding: 0;
     border-radius: 50px;
     font-size: 0.95rem;
     font-weight: 600;
@@ -647,6 +657,11 @@ body {
     box-shadow: 0 6px 20px rgba(255, 107, 90, 0.35);
     position: relative;
     overflow: hidden;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .continue-button::before {
@@ -668,7 +683,7 @@ body {
 }
 
 .continue-button:hover {
-    background: linear-gradient(135deg, var(--accent-red-dark), #ff7a6e);
+    background: linear-gradient(90deg, #e85d2f, #d91a6a);
     transform: translateY(-4px);
     box-shadow: 0 10px 30px rgba(255, 107, 90, 0.5);
     letter-spacing: 0.5px;
@@ -681,7 +696,7 @@ body {
 
 .results-button {
     flex: 1;
-    background: linear-gradient(135deg, #d4b5e0, #e0c5eb);
+    background: linear-gradient(90deg, #F96C34, #F2217B);
     color: var(--text-dark);
     border: none;
     padding: 0.85rem;
@@ -1058,7 +1073,7 @@ body {
     transition: width 0.3s ease;
 }
 
-.continue-button {
+.auth-continue-button {
     width: 100%;
     padding: 1rem;
     margin-top: 2rem;
@@ -1078,12 +1093,12 @@ body {
     letter-spacing: 1px;
 }
 
-.continue-button:hover {
+.auth-continue-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(255, 107, 90, 0.3);
 }
 
-.continue-button:active {
+.auth-continue-button:active {
     transform: translateY(0);
 }
 
@@ -1132,6 +1147,7 @@ body {
     padding: 0.85rem;
     border: none;
     border-radius: 6px;
+    background: linear-gradient(90deg, #F96C34, #F2217B);
     color: var(--white);
     font-size: 0.9rem;
     font-weight: 600;
