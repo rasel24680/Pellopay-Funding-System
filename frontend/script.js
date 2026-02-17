@@ -698,10 +698,39 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
+// Handle forgot password
+function handleForgotPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const messageEl = document.getElementById('authMessage');
+    
+    if (!email) {
+        showAuthMessage('Please enter your email address first', 'error', messageEl);
+        return;
+    }
+    
+    if (!isValidEmail(email)) {
+        showAuthMessage('Please enter a valid email address', 'error', messageEl);
+        return;
+    }
+    
+    // Simulate sending reset email
+    showAuthMessage('Sending password reset email...', 'success', messageEl);
+    setTimeout(() => {
+        showAuthMessage('Password reset link sent to ' + email + '. Check your inbox!', 'success', messageEl);
+    }, 1000);
+}
+
 // Initialize auth page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Only initialize if on auth page
     if (document.querySelector('.auth-section-new')) {
         initializeAuthPage();
+        
+        // Add forgot password handler
+        const forgotPasswordLink = document.querySelector('.forgot-password-link');
+        if (forgotPasswordLink) {
+            forgotPasswordLink.addEventListener('click', handleForgotPassword);
+        }
     }
 });

@@ -926,134 +926,50 @@ body {
 
 /* ===== Authentication Pages ===== */
 .auth-section-new {
-    min-height: 100vh;
+    height: calc(100vh - 80px);
     display: flex;
     overflow: hidden;
     background: var(--white);
-    padding-top: 80px;
+    margin-top: 80px;
 }
 
 .auth-left {
     flex: 1;
-    background: linear-gradient(135deg, var(--accent-red) 0%, #ff8c42 100%);
+    background: var(--white);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 4rem 2rem;
+    padding: 2rem;
     position: relative;
-    color: var(--white);
     overflow: hidden;
 }
 
-.circle-decor {
-    position: absolute;
-    opacity: 0.5;
-    animation: float 6s ease-in-out infinite;
-}
-
-.circle-1 {
-    width: 280px;
-    height: 280px;
-    top: 10%;
-    left: -50px;
-    animation-delay: 0s;
-}
-
-.circle-2 {
-    width: 200px;
-    height: 200px;
-    bottom: 15%;
-    right: 10%;
-    animation-delay: 1s;
-    fill: rgba(255, 255, 255, 0.2);
-}
-
-.circle-3 {
-    width: 150px;
-    height: 150px;
-    bottom: 30%;
-    left: 15%;
-    animation-delay: 2s;
-    fill: rgba(255, 255, 255, 0.25);
-}
-
-.wave-shape {
-    position: absolute;
-    bottom: -1px;
-    left: 0;
+.auth-banner-image {
     width: 100%;
-    opacity: 0.3;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-20px);
-    }
-}
+/* Removed - no longer used with banner image */
 
-.welcome-content {
-    text-align: center;
-    margin-bottom: 3rem;
-    position: relative;
-    z-index: 2;
-    max-width: 450px;
-}
-
-.welcome-content h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--white);
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.welcome-content p {
-    font-size: 1.2rem;
-    font-weight: 500;
-    line-height: 1.6;
-    opacity: 0.95;
-    color: var(--white);
-    margin-bottom: 0.5rem;
-}
-
-.welcome-content .welcome-desc {
-    font-size: 0.95rem;
-    font-weight: 400;
-    opacity: 0.85;
-}
-
-.trust-section {
-    text-align: left;
-    margin-top: 3rem;
-    position: relative;
-    z-index: 2;
-}
-
-.trust-section p {
-    font-size: 0.95rem;
-    margin: 0.75rem 0;
-    opacity: 0.9;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
+/* Removed - no longer used with banner image */
 
 .auth-right {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 1.5rem;
     background: var(--white);
+    overflow-y: auto;
 }
 
 .form-container {
     width: 100%;
     max-width: 420px;
+    max-height: 100%;
 }
 
 .form-title {
@@ -1118,6 +1034,20 @@ body {
     border-bottom-color: var(--accent-red);
 }
 
+.forgot-password-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--accent-red);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.forgot-password-link:hover {
+    color: var(--accent-red-dark);
+    text-decoration: underline;
+}
+
 .password-strength {
     margin-top: 0.5rem;
     height: 3px;
@@ -1168,6 +1098,14 @@ body {
     position: relative;
     color: #999;
     font-size: 0.85rem;
+}
+
+.social-divider span {
+    position: relative;
+    z-index: 1;
+    background: white;
+    padding: 0 10px;
+    display: inline-block;
 }
 
 .social-divider::before,
