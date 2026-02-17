@@ -6,15 +6,186 @@
     <title>Your Funding Results - Pellopay</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        /* ===== Animations ===== */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        @keyframes scaleInRotate {
+            from {
+                opacity: 0;
+                transform: scale(0.5) rotate(-20deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes flipIn {
+            from {
+                opacity: 0;
+                transform: perspective(400px) rotateY(-90deg);
+            }
+            to {
+                opacity: 1;
+                transform: perspective(400px) rotateY(0);
+            }
+        }
+
+        @keyframes rotateScale {
+            0% {
+                transform: rotate(0) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.1);
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
         .results-section {
             min-height: auto;
             padding: 2rem 1rem;
-            background-color: #f9f9f9;
+            background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+            position: relative;
+            overflow: hidden;
         }
 
         .results-container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
 
         .results-header {
@@ -23,17 +194,42 @@
             padding: 2rem;
             border-radius: 12px;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            animation: slideInDown 0.7s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 107, 90, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
         }
 
         .results-header h1 {
             font-size: 2rem;
             margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(45deg, #ffffff, #ffd6d0, #ffffff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: slideInDown 0.8s ease-out, gradientShift 4s ease infinite;
         }
 
         .results-header p {
             font-size: 1.1rem;
             opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
 
         .results-content {
@@ -47,25 +243,61 @@
             background: white;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: slideInLeft 0.7s ease-out;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-message::before {
+            content: '✓';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            font-size: 180px;
+            color: rgba(16, 185, 129, 0.05);
+            font-weight: bold;
+            animation: rotateScale 8s ease-in-out infinite;
+        }
+
+        .results-message::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 90, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
             transition: all 0.3s ease;
         }
 
         .results-message:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(255, 107, 90, 0.2);
+            transform: translateY(-8px);
+            border-color: var(--accent-red);
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255, 107, 90, 0.03) 100%);
         }
 
         .results-message h2 {
             color: var(--primary-dark);
             margin-bottom: 1rem;
             font-size: 1.5rem;
+            animation: slideInUp 0.8s ease-out 0.2s both;
+            position: relative;
+            z-index: 1;
         }
 
         .results-message p {
             color: var(--text-light);
             line-height: 1.8;
             margin-bottom: 1.5rem;
+            animation: slideInUp 0.8s ease-out 0.3s both;
+            position: relative;
+            z-index: 1;
         }
 
         .adjust-button {
@@ -76,14 +308,58 @@
             border-radius: 25px;
             text-decoration: none;
             font-weight: 600;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             border: none;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(255, 107, 90, 0.3);
+            animation: slideInUp 0.8s ease-out 0.4s both;
+            z-index: 1;
+        }
+
+        .adjust-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .adjust-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: width 0.4s ease;
+            z-index: -1;
+        }
+
+        .adjust-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .adjust-button:hover::after {
+            width: 100%;
         }
 
         .adjust-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 90, 0.3);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(255, 107, 90, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .adjust-button:active {
+            transform: translateY(-2px) scale(1.02);
         }
 
         .contact-section {
@@ -91,28 +367,53 @@
             color: white;
             padding: 2rem;
             border-radius: 12px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(26, 43, 61, 0.15);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 24px rgba(26, 43, 61, 0.2);
+            animation: slideInRight 0.7s ease-out;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 107, 90, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
         }
 
         .contact-section:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(26, 43, 61, 0.25);
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(26, 43, 61, 0.3);
+            border-color: var(--accent-red);
         }
 
         .contact-section h2 {
             font-size: 1.5rem;
             margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+            animation: slideInUp 0.8s ease-out 0.2s both;
         }
 
         .contact-section p {
             opacity: 0.9;
             line-height: 1.8;
             margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+            animation: slideInUp 0.8s ease-out 0.3s both;
         }
 
         .contact-details {
             margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .contact-detail {
@@ -120,6 +421,12 @@
             align-items: center;
             gap: 1rem;
             margin-bottom: 1rem;
+            animation: slideInUp 0.8s ease-out 0.4s both;
+            transition: all 0.3s ease;
+        }
+
+        .contact-detail:hover {
+            transform: translateX(8px);
         }
 
         .contact-detail .icon {
@@ -131,6 +438,34 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 107, 90, 0.3);
+            position: relative;
+        }
+
+        .contact-detail .icon::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-red), #ff8c42, var(--accent-red));
+            background-size: 200% 200%;
+            border-radius: 50%;
+            animation: gradientShift 3s ease infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .contact-detail:hover .icon::before {
+            opacity: 1;
+        }
+
+        .contact-detail:hover .icon {
+            transform: scale(1.2) rotate(15deg);
+            box-shadow: 0 10px 25px rgba(255, 107, 90, 0.5);
         }
 
         .contact-detail a {
@@ -148,19 +483,23 @@
             background: white;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: slideInUp 0.7s ease-out;
+            border: 2px solid transparent;
         }
 
         .contact-form-section:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-6px);
+            border-color: var(--accent-red);
         }
 
         .contact-form-section h3 {
             color: var(--primary-dark);
             margin-bottom: 1.5rem;
             font-size: 1.2rem;
+            animation: slideInUp 0.8s ease-out 0.2s both;
         }
 
         .form-row {
@@ -182,14 +521,31 @@
             border-radius: 8px;
             font-family: inherit;
             font-size: 0.95rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background: white;
+            position: relative;
+            background-image: linear-gradient(90deg, transparent, rgba(255, 107, 90, 0.1), transparent);
+            background-size: 200% 100%;
+            background-position: 100% 0;
+        }
+
+        .contact-form-section input::placeholder,
+        .contact-form-section textarea::placeholder {
+            transition: color 0.3s ease;
+        }
+
+        .contact-form-section input:focus::placeholder,
+        .contact-form-section textarea:focus::placeholder {
+            color: var(--accent-red);
         }
 
         .contact-form-section input:focus,
         .contact-form-section textarea:focus {
             outline: none;
             border-color: var(--accent-red);
-            box-shadow: 0 0 0 3px rgba(255, 107, 90, 0.1);
+            box-shadow: 0 0 0 4px rgba(255, 107, 90, 0.15), inset 0 2px 8px rgba(255, 107, 90, 0.1);
+            transform: translateY(-3px);
+            background-position: 0 0;
         }
 
         .contact-form-section textarea {
@@ -207,12 +563,54 @@
             font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(255, 107, 90, 0.3);
+            animation: slideInUp 0.8s ease-out 0.3s both;
+        }
+
+        .submit-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .submit-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+            animation: none;
+            transition: animation 0.3s ease;
+        }
+
+        .submit-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-button:hover::after {
+            animation: slideInRight 0.6s ease infinite;
         }
 
         .submit-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 90, 0.3);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(255, 107, 90, 0.5);
+        }
+
+        .submit-button:active {
+            transform: translateY(-1px) scale(0.98);
         }
 
         .form-summary {
@@ -220,19 +618,23 @@
             padding: 1.5rem;
             border-radius: 8px;
             margin-bottom: 2rem;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             border: 2px solid transparent;
+            animation: slideInUp 0.7s ease-out;
         }
 
         .form-summary:hover {
             border-color: var(--accent-red);
-            box-shadow: 0 4px 12px rgba(255, 107, 90, 0.15);
+            box-shadow: 0 8px 24px rgba(255, 107, 90, 0.2);
+            background: linear-gradient(135deg, var(--gray-light) 0%, rgba(255, 107, 90, 0.05) 100%);
+            transform: translateY(-4px);
         }
 
         .form-summary h3 {
             color: var(--primary-dark);
             margin-bottom: 1rem;
             font-size: 1.1rem;
+            animation: slideInUp 0.8s ease-out 0.2s both;
         }
 
         .summary-row {
@@ -247,6 +649,58 @@
             background: white;
             border-radius: 6px;
             border-left: 3px solid var(--accent-red);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: slideInUp 0.8s ease-out both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(255, 107, 90, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .summary-item:hover::before {
+            opacity: 1;
+        }
+
+        .summary-row:nth-child(1) .summary-item:nth-child(1) {
+            animation-delay: 0.3s;
+        }
+
+        .summary-row:nth-child(1) .summary-item:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .summary-row:nth-child(2) .summary-item:nth-child(1) {
+            animation-delay: 0.5s;
+        }
+
+        .summary-row:nth-child(2) .summary-item:nth-child(2) {
+            animation-delay: 0.6s;
+        }
+
+        .summary-row:nth-child(3) .summary-item:nth-child(1) {
+            animation-delay: 0.7s;
+        }
+
+        .summary-row:nth-child(3) .summary-item:nth-child(2) {
+            animation-delay: 0.8s;
+        }
+
+        .summary-item:hover {
+            transform: translateY(-6px) rotateX(5deg);
+            box-shadow: 0 12px 28px rgba(255, 107, 90, 0.25);
+            border-left-color: #ff8c42;
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255, 107, 90, 0.05) 100%);
         }
 
         .summary-item label {
@@ -254,12 +708,31 @@
             font-size: 0.85rem;
             color: var(--text-light);
             margin-bottom: 0.3rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            z-index: 1;
+        }
+
+        .summary-item:hover label {
+            color: var(--accent-red);
+            font-weight: 700;
+            transform: translateX(2px);
+            letter-spacing: 0.5px;
         }
 
         .summary-item span {
             display: block;
             font-weight: 600;
             color: var(--primary-dark);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            z-index: 1;
+        }
+
+        .summary-item:hover span {
+            color: var(--accent-red);
+            font-size: 1.05em;
+            font-weight: 700;
         }
 
         @media (max-width: 900px) {
@@ -277,6 +750,10 @@
 
             .contact-section {
                 order: -1;
+            }
+
+            .results-decor-1, .results-decor-2 {
+                display: none !important;
             }
         }
 
@@ -312,12 +789,38 @@
             <a href="index.html" class="logo-link">
                 <img src="assets/logo.png" alt="Pellopay" class="logo-img">
             </a>
-            <button class="login-button">Login</button>
+            <div class="nav-menu">
+                <a href="#loans" class="nav-link">Loans</a>
+                <a href="#guides" class="nav-link">Guides</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="#blog" class="nav-link">Blog</a>
+            </div>
+            <div class="nav-actions">
+                <a href="funding-form.html" class="find-funding-btn">Find Funding</a>
+                <a href="login.html" class="login-btn">Login</a>
+            </div>
         </div>
     </nav>
 
     <!-- Results Section -->
     <section class="results-section">
+        <!-- Decorative SVG Elements -->
+        <svg class="decor-vector results-decor-1" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" style="position: fixed; top: 100px; right: 30px; width: 150px; opacity: 0.1; z-index: 1; animation: rotateScale 12s ease-in-out infinite;">
+            <circle cx="75" cy="75" r="60" fill="#FF6B5A" opacity="0.8"/>
+            <circle cx="75" cy="75" r="45" fill="none" stroke="#FF6B5A" stroke-width="2" opacity="0.6"/>
+            <circle cx="75" cy="75" r="30" fill="none" stroke="#FF8C42" stroke-width="2" opacity="0.4"/>
+        </svg>
+
+        <svg class="decor-vector results-decor-2" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="position: fixed; bottom: 150px; left: 50px; width: 120px; opacity: 0.08; z-index: 1; animation: spin 20s linear infinite;">
+            <path d="M60 10L80 50L125 55L95 80L105 125L60 95L15 125L25 80L-5 55L40 50Z" fill="url(#starGradient3)"/>
+            <defs>
+                <linearGradient id="starGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FF6B5A;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FF8C42;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+        </svg>
+
         <div class="results-container">
             <div class="results-header">
                 <h1>Your Funding Results</h1>
@@ -417,40 +920,168 @@
     </footer>
 
     <script>
+        // Animate numbers in summary
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = value;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Create confetti particles
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `
+                position: fixed;
+                left: ${Math.random() * 100}%;
+                top: -10px;
+                width: 10px;
+                height: 10px;
+                background: linear-gradient(45deg, var(--accent-red), #ff8c42);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                box-shadow: 0 0 10px rgba(255, 107, 90, 0.8);
+                animation: float 3s ease-in forwards, fadeOut 3s ease-in forwards;
+            `;
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 3000);
+        }
+
+        // Add fadeOut animation to style
+        const fadeOutStyle = document.createElement('style');
+        fadeOutStyle.textContent = `
+            @keyframes fadeOut {
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(fadeOutStyle);
+
         // Load and display form data from localStorage
         document.addEventListener('DOMContentLoaded', function() {
+            // Add fade-in animation to page
+            document.body.style.animation = 'fadeIn 0.6s ease-out';
+
+            // Celebrate with confetti
+            setTimeout(() => {
+                for (let i = 0; i < 12; i++) {
+                    setTimeout(() => createConfetti(), i * 80);
+                }
+            }, 800);
+
             const formData = JSON.parse(localStorage.getItem('fundingFormData') || '{}');
             
-            // Populate summary
+            // Populate summary with animations
             if (formData.fundingAmount) {
-                document.getElementById('summaryAmount').textContent = '£' + parseFloat(formData.fundingAmount).toLocaleString();
+                const amount = parseFloat(formData.fundingAmount);
+                const element = document.getElementById('summaryAmount');
+                element.textContent = '£' + amount.toLocaleString();
+                element.style.fontWeight = '700';
+                element.style.color = 'var(--accent-red)';
             }
+
             if (formData.fundingPurpose) {
                 document.getElementById('summaryPurpose').textContent = formData.fundingPurpose;
             }
+
             if (formData.annualTurnover) {
-                document.getElementById('summaryTurnover').textContent = '£' + parseFloat(formData.annualTurnover).toLocaleString();
+                const turnover = parseFloat(formData.annualTurnover);
+                const element = document.getElementById('summaryTurnover');
+                element.textContent = '£' + turnover.toLocaleString();
+                element.style.fontWeight = '700';
+                element.style.color = 'var(--accent-red)';
             }
+
             if (formData.tradingYears) {
                 const tradingText = formData.tradingYears === 'Yes' 
                     ? '3+ years' 
                     : (formData.tradingMonths && formData.tradingMonths !== 'N/A' ? formData.tradingMonths + ' months' : 'Less than 3 years');
-                document.getElementById('summaryTrading').textContent = tradingText;
+                
+                const tradingElement = document.getElementById('summaryTrading');
+                tradingElement.textContent = tradingText;
             }
+
             if (formData.importance) {
                 document.getElementById('summaryImportance').textContent = formData.importance;
             }
+
             if (formData.homeowner) {
                 document.getElementById('summaryHomeowner').textContent = formData.homeowner;
             }
 
-            // Handle contact form submission
+            // Handle contact form submission with more effects
             const contactForm = document.getElementById('contactForm');
             if (contactForm) {
                 contactForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    alert('Thank you for your message! Our team will be in touch shortly.');
-                    contactForm.reset();
+                    
+                    const submitBtn = contactForm.querySelector('.submit-button');
+                    const originalText = submitBtn.textContent;
+                    
+                    // Show loading state
+                    submitBtn.textContent = '⏳ Sending...';
+                    submitBtn.style.opacity = '0.8';
+                    submitBtn.style.pointerEvents = 'none';
+                    submitBtn.style.transform = 'scale(0.98)';
+
+                    // Simulate sending
+                    setTimeout(() => {
+                        submitBtn.textContent = '✓ Sent!';
+                        submitBtn.style.transform = 'scale(1)';
+                        
+                        // Celebrate success
+                        for (let i = 0; i < 20; i++) {
+                            setTimeout(() => createConfetti(), i * 50);
+                        }
+                        
+                        // Show success message
+                        const alert = document.createElement('div');
+                        alert.className = 'custom-alert custom-alert-success';
+                        alert.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5em;">🎉</span>
+                                <div>
+                                    <strong>Message Sent!</strong><br/>
+                                    <small>Our team will be in touch shortly.</small>
+                                </div>
+                            </div>
+                        `;
+                        alert.style.cssText = `
+                            position: fixed;
+                            top: 100px;
+                            right: 20px;
+                            padding: 1.2rem 1.5rem;
+                            background: linear-gradient(135deg, #10b981, #059669);
+                            color: white;
+                            border-radius: 12px;
+                            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+                            animation: slideInRight 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                            z-index: 1000;
+                            font-weight: 500;
+                            border: 2px solid rgba(255, 255, 255, 0.2);
+                            max-width: 350px;
+                        `;
+                        document.body.appendChild(alert);
+
+                        // Reset form after delay
+                        setTimeout(() => {
+                            contactForm.reset();
+                            submitBtn.textContent = originalText;
+                            submitBtn.style.opacity = '1';
+                            submitBtn.style.pointerEvents = 'auto';
+                            
+                            alert.style.animation = 'slideOutRight 0.4s ease';
+                            setTimeout(() => alert.remove(), 400);
+                        }, 2500);
+                    }, 1200);
                 });
             }
         });
