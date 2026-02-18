@@ -1,0 +1,157 @@
+-- =============================================
+-- FundOnion Database Schema
+-- JWT Authentication + Phone Verification
+-- =============================================
+
+-- Create database (if running manually)
+CREATE DATABASE IF NOT EXISTS pellopay;
+USE pellopay;
+
+-- Drop existing tables (for fresh setup)
+DROP TABLE IF EXISTS session_logs;
+DROP TABLE IF EXISTS password_reset_tokens;
+DROP TABLE IF EXISTS phone_verifications;
+DROP TABLE IF EXISTS funding_applications;
+DROP TABLE IF EXISTS contact_inquiries;
+DROP TABLE IF EXISTS users;
+
+-- =============================================
+-- Users Table (JWT Authentication)
+-- =============================================
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    business_type ENUM('Limited company', 'Limited partnership', 'Partnership', 'Sole trader', 'Other') DEFAULT NULL,
+    business_name VARCHAR(255),
+    phone VARCHAR(50),
+    phone_verified BOOLEAN DEFAULT FALSE,
+    is_active BOOLEAN DEFAULT TRUE,
+    email_verified BOOLEAN DEFAULT FALSE,
+    last_login DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_email (email),
+    INDEX idx_phone_verified (phone_verified)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Phone Verifications Table
+-- =============================================
+CREATE TABLE IF NOT EXISTS phone_verifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    code VARCHAR(6) NOT NULL,
+    attempts INT DEFAULT 0,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_expires_at (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Funding Applications Table (Stores form data)
+-- user_id is nullable for guest applications
+-- =============================================
+CREATE TABLE IF NOT EXISTS funding_applications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT DEFAULT NULL,
+    session_id VARCHAR(255),
+    
+    -- Step 1: Funding Details
+    funding_amount DECIMAL(15, 2) NOT NULL,
+    funding_purpose ENUM('Growth', 'Cashflow', 'Refinancing', 'Asset Finance', 'Other') NOT NULL,
+    asset_type VARCHAR(100),
+    
+    -- Step 2: Priorities
+    importance ENUM('Fast approval', 'Low cost', 'Personalised support', 'Low credit options'),
+    
+    -- Step 3: Business Info
+    annual_turnover DECIMAL(15, 2),
+    trading_years ENUM('Yes', 'No'),
+    trading_months INT,
+    homeowner ENUM('Yes', 'No'),
+    
+    -- Step 4: Contact Info (collected during signup or from form)
+    contact_first_name VARCHAR(100),
+    contact_last_name VARCHAR(100),
+    contact_email VARCHAR(255),
+    contact_phone VARCHAR(50),
+    business_type ENUM('Limited company', 'Limited partnership', 'Partnership', 'Sole trader', 'Other'),
+    business_name VARCHAR(255),
+    
+    -- Status
+    status ENUM('pending', 'reviewing', 'approved', 'rejected', 'completed') DEFAULT 'pending',
+    admin_notes TEXT,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_user_id (user_id),
+    INDEX idx_session_id (session_id),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Contact Inquiries Table
+-- =============================================
+CREATE TABLE IF NOT EXISTS contact_inquiries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(50),
+    business_name VARCHAR(255),
+    subject VARCHAR(255),
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    is_resolved BOOLEAN DEFAULT FALSE,
+    resolved_by INT,
+    resolved_at DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_email (email),
+    INDEX idx_is_read (is_read),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Password Reset Tokens Table
+-- =============================================
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Session Logs Table (for analytics)
+-- =============================================
+CREATE TABLE IF NOT EXISTS session_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    action VARCHAR(100) NOT NULL,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    details JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_user_id (user_id),
+    INDEX idx_action (action),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
