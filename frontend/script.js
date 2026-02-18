@@ -241,16 +241,23 @@ document.addEventListener("DOMContentLoaded", function () {
           );
 
           setTimeout(() => {
-            window.location.href = "results.html";
+            // Guest users go to results (blurred), logged-in users go to dashboard
+            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+            window.location.href = isLoggedIn
+              ? "dashboard.html"
+              : "results.html";
           }, 1000);
         } catch (error) {
           console.error("Submission error:", error);
-          // Still redirect to results even if API fails (offline mode)
+          // Still redirect even if API fails (offline mode)
           submitBtn.innerHTML = "✓ Submitted!";
-          showAlert("Application saved! Redirecting to results...", "success");
+          showAlert("Application saved! Redirecting...", "success");
 
           setTimeout(() => {
-            window.location.href = "results.html";
+            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+            window.location.href = isLoggedIn
+              ? "dashboard.html"
+              : "results.html";
           }, 1000);
         }
       }
@@ -829,9 +836,9 @@ async function handleLogin(form) {
     showAuthMessage("Login successful! Redirecting...", "success", messageEl);
 
     setTimeout(() => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectPage = urlParams.get("redirect") || "funding-form.html";
-      window.location.href = redirectPage;
+      // Check if phone is verified - if not, need to verify first
+      // After login, always go to dashboard (phone verification happens there if needed)
+      window.location.href = "dashboard.html";
     }, 1000);
   } catch (error) {
     console.error("Login error:", error);
@@ -963,9 +970,8 @@ async function handleSignup(form) {
     showAuthMessage("Account created! Redirecting...", "success", messageEl);
 
     setTimeout(() => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectPage = urlParams.get("redirect") || "funding-form.html";
-      window.location.href = redirectPage;
+      // After signup, go to dashboard (phone verification happens there)
+      window.location.href = "dashboard.html";
     }, 1000);
   } catch (error) {
     console.error("Signup error:", error);
@@ -1324,6 +1330,15 @@ function initializeDashboard() {
 
   // Initialize sidebar user info, avatar & profile picture
   initializeSidebarUserInfo();
+
+  // Check if phone is verified - show modal if not
+  const isPhoneVerified = localStorage.getItem("isPhoneVerified") === "true";
+  if (!isPhoneVerified) {
+    showDashboardPhoneVerificationModal();
+  }
+
+  // Load and display user's application
+  loadUserApplication();
 
   // Initialize sidebar navigation
   const sidebarItems = document.querySelectorAll(".sidebar-item");
@@ -1992,6 +2007,241 @@ function showCopyFeedback(button) {
     button.innerHTML = originalHTML;
     button.classList.remove("copied");
   }, 2000);
+}
+
+// ===== Dashboard Phone Verification Modal =====
+function showDashboardPhoneVerificationModal() {
+  // Create modal if it doesn't exist
+  let modal = document.getElementById("dashboardPhoneModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "dashboardPhoneModal";
+    modal.className = "phone-verify-overlay";
+    modal.innerHTML = `
+      <div class="phone-verify-card">
+        <h2>Verify Your Phone</h2>
+        <p class="verify-subtitle">Please verify your mobile number to access your matched funders.</p>
+        <form id="dashboardPhoneForm">
+          <div class="phone-verify-group">
+            <label>Mobile number</label>
+            <input type="tel" id="dashboardPhoneInput" placeholder="Mobile Phone" maxlength="15">
+          </div>
+          <div class="phone-verify-message" id="dashboardPhoneMessage"></div>
+          <button type="submit" class="phone-verify-btn" id="dashboardPhoneBtn">Get code</button>
+        </form>
+        <button class="phone-verify-skip" id="dashboardPhoneSkip">Skip for now</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  modal.style.display = "flex";
+
+  const phoneForm = document.getElementById("dashboardPhoneForm");
+  const phoneInput = document.getElementById("dashboardPhoneInput");
+  const phoneMessage = document.getElementById("dashboardPhoneMessage");
+  const phoneBtn = document.getElementById("dashboardPhoneBtn");
+  const skipBtn = document.getElementById("dashboardPhoneSkip");
+
+  let verificationStep = "phone";
+
+  // Skip button - close modal
+  skipBtn.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  // Form submit handler
+  phoneForm.onsubmit = async (e) => {
+    e.preventDefault();
+    const inputValue = phoneInput.value.trim();
+    phoneMessage.classList.remove("success", "error");
+    phoneMessage.textContent = "";
+
+    if (verificationStep === "phone") {
+      // Step 1: Send code
+      if (!inputValue || !/^\d{7,15}$/.test(inputValue.replace(/\D/g, ""))) {
+        phoneMessage.textContent = "Please enter a valid mobile number";
+        phoneMessage.classList.add("error");
+        return;
+      }
+
+      phoneBtn.disabled = true;
+      phoneBtn.textContent = "Sending code...";
+
+      try {
+        const authToken = localStorage.getItem("authToken");
+        const response = await fetch(`${API_BASE}/phone/send-code`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({ phone: inputValue }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to send code");
+        }
+
+        // DEV mode - show code
+        if (data.code) {
+          phoneMessage.textContent = `DEV MODE - Code: ${data.code}`;
+        } else {
+          phoneMessage.textContent = "Code sent! Check your phone.";
+        }
+        phoneMessage.classList.add("success");
+
+        verificationStep = "code";
+        phoneInput.value = "";
+        phoneInput.placeholder = "Enter 6-digit code";
+        phoneInput.maxLength = 6;
+        phoneBtn.textContent = "Verify Code";
+        phoneBtn.disabled = false;
+        localStorage.setItem("pendingPhoneVerification", inputValue);
+      } catch (error) {
+        phoneMessage.textContent = error.message || "Failed to send code";
+        phoneMessage.classList.add("error");
+        phoneBtn.textContent = "Get code";
+        phoneBtn.disabled = false;
+      }
+    } else {
+      // Step 2: Verify code
+      if (!inputValue || inputValue.length !== 6) {
+        phoneMessage.textContent = "Please enter the 6-digit code";
+        phoneMessage.classList.add("error");
+        return;
+      }
+
+      phoneBtn.disabled = true;
+      phoneBtn.textContent = "Verifying...";
+
+      try {
+        const authToken = localStorage.getItem("authToken");
+        const response = await fetch(`${API_BASE}/phone/verify`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({ code: inputValue }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Invalid code");
+        }
+
+        phoneMessage.textContent = "Phone verified successfully!";
+        phoneMessage.classList.add("success");
+        phoneBtn.textContent = "✓ Verified";
+
+        localStorage.setItem("isPhoneVerified", "true");
+        localStorage.setItem(
+          "userPhone",
+          "+44" + localStorage.getItem("pendingPhoneVerification"),
+        );
+        localStorage.removeItem("pendingPhoneVerification");
+
+        setTimeout(() => {
+          modal.style.display = "none";
+          // Redirect to search results after verification
+          window.location.href = "search-results.html";
+        }, 1000);
+      } catch (error) {
+        phoneMessage.textContent = error.message || "Invalid code";
+        phoneMessage.classList.add("error");
+        phoneBtn.textContent = "Verify Code";
+        phoneBtn.disabled = false;
+      }
+    }
+  };
+
+  // Allow only numbers
+  phoneInput.oninput = () => {
+    phoneInput.value = phoneInput.value
+      .replace(/\D/g, "")
+      .slice(0, phoneInput.maxLength || 15);
+  };
+}
+
+// ===== Load User Application =====
+function loadUserApplication() {
+  const myApplicationsList = document.getElementById("my-applications");
+  if (!myApplicationsList) return;
+
+  const formData = localStorage.getItem("fundingFormData");
+
+  if (formData) {
+    try {
+      const data = JSON.parse(formData);
+      const applicationId =
+        localStorage.getItem("applicationId") ||
+        "APP-" + Date.now().toString(36).toUpperCase();
+
+      myApplicationsList.innerHTML = `
+        <div class="application-card">
+          <div class="application-header">
+            <div class="application-info">
+              <h3>Funding Application</h3>
+              <span class="application-id">#${applicationId}</span>
+            </div>
+            <span class="application-status status-pending">Pending Review</span>
+          </div>
+          <div class="application-details">
+            <div class="detail-row">
+              <span class="detail-label">Amount Requested</span>
+              <span class="detail-value">£${Number(data.fundingAmount || 0).toLocaleString()}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Purpose</span>
+              <span class="detail-value">${data.fundingPurpose || "Not specified"}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Annual Turnover</span>
+              <span class="detail-value">£${Number(data.annualTurnover || 0).toLocaleString()}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Trading Experience</span>
+              <span class="detail-value">${data.tradingYears === "Yes" ? "3+ years" : data.tradingMonths ? data.tradingMonths + " months" : "Less than 3 years"}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Priority</span>
+              <span class="detail-value">${data.importance || "Not specified"}</span>
+            </div>
+          </div>
+          <div class="application-actions">
+            <button class="btn-view-results" onclick="window.location.href='search-results.html'">
+              View Matched Funders →
+            </button>
+            <button class="btn-edit-application" onclick="window.location.href='funding-form.html'">
+              Edit Application
+            </button>
+          </div>
+        </div>
+      `;
+    } catch (e) {
+      console.error("Error parsing form data:", e);
+    }
+  } else {
+    myApplicationsList.innerHTML = `
+      <div class="no-applications-card">
+        <div class="no-app-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+            <polyline points="13 2 13 9 20 9"/>
+          </svg>
+        </div>
+        <h3>No Applications Yet</h3>
+        <p>Start your funding journey by submitting an application.</p>
+        <button class="btn-start-application" onclick="window.location.href='funding-form.html'">
+          Start Application →
+        </button>
+      </div>
+    `;
+  }
 }
 
 // ===== Logout Handler =====
