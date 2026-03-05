@@ -1167,6 +1167,17 @@ function initializeUserNavbar() {
   if (connectedAppsLink) {
     connectedAppsLink.addEventListener("click", function (e) {
       e.preventDefault();
+
+      // If already on real dashboard, switching hash triggers section activation.
+      const isRealDashboardPage =
+        !!document.getElementById("section-applications") &&
+        !!document.getElementById("section-connected-apps");
+
+      if (isRealDashboardPage) {
+        window.location.hash = "connected-apps";
+        return;
+      }
+
       window.location.href = "dashboard.html#connected-apps";
     });
   }
@@ -1320,11 +1331,28 @@ function initializeDashboard() {
   const sidebarItems = document.querySelectorAll(".sidebar-item");
   const dashboardSections = document.querySelectorAll(".dashboard-section");
 
+  const activateDashboardSection = (sectionName) => {
+    if (!sectionName) return;
+
+    const targetSidebarItem = document.querySelector(
+      `.sidebar-item[data-section="${sectionName}"]`,
+    );
+    const targetSection = document.getElementById(`section-${sectionName}`);
+
+    if (!targetSidebarItem || !targetSection) return;
+
+    sidebarItems.forEach((i) => i.classList.remove("active"));
+    dashboardSections.forEach((s) => (s.style.display = "none"));
+
+    targetSidebarItem.classList.add("active");
+    targetSection.style.display = "block";
+  };
+
   sidebarItems.forEach((item) => {
     item.addEventListener("click", function (e) {
       // Check if this is an external page link
       const href = this.getAttribute("href");
-      if (href && href.endsWith(".html")) {
+      if (href && /\.html($|[?#])/.test(href)) {
         // Allow navigation to external pages
         return;
       }
@@ -1332,20 +1360,11 @@ function initializeDashboard() {
       e.preventDefault();
 
       // Remove active class from all items
-      sidebarItems.forEach((i) => i.classList.remove("active"));
-      // Add active class to clicked item
-      this.classList.add("active");
+      activateDashboardSection(this.dataset.section);
 
-      // Hide all sections
-      dashboardSections.forEach((section) => {
-        section.style.display = "none";
-      });
-
-      // Show corresponding section
-      const sectionId = `section-${this.dataset.section}`;
-      const targetSection = document.getElementById(sectionId);
-      if (targetSection) {
-        targetSection.style.display = "block";
+      // Keep URL in sync when switching in-page sections.
+      if (this.dataset.section) {
+        window.location.hash = this.dataset.section;
       }
     });
   });
@@ -1378,22 +1397,15 @@ function initializeDashboard() {
   // Handle hash-based section navigation (e.g. dashboard.html#connected-apps)
   const hash = window.location.hash.replace("#", "");
   if (hash) {
-    const targetSidebarItem = document.querySelector(
-      `.sidebar-item[data-section="${hash}"]`,
-    );
-    if (targetSidebarItem) {
-      // Remove active from all sidebar items and sections
-      sidebarItems.forEach((i) => i.classList.remove("active"));
-      dashboardSections.forEach((s) => (s.style.display = "none"));
-
-      // Activate the target
-      targetSidebarItem.classList.add("active");
-      const targetSection = document.getElementById(`section-${hash}`);
-      if (targetSection) {
-        targetSection.style.display = "block";
-      }
-    }
+    activateDashboardSection(hash);
   }
+
+  window.addEventListener("hashchange", () => {
+    const nextHash = window.location.hash.replace("#", "");
+    if (nextHash) {
+      activateDashboardSection(nextHash);
+    }
+  });
 }
 
 // ===== Search Results Functions =====
@@ -2607,7 +2619,7 @@ function initializeAdminPage() {
     item.addEventListener("click", function (e) {
       // Check if this is an external page link
       const href = this.getAttribute("href");
-      if (href && href.endsWith(".html")) {
+      if (href && /\.html($|[?#])/.test(href)) {
         // Allow navigation to external pages
         return;
       }
